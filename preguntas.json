@@ -1,0 +1,16 @@
+{"preguntas":
+	[
+	{"titulo":["¿Capital de perú?"],
+	 "respuesta":["Es lima"]
+	},
+	{"titulo":["¿Cual es el presidente de españa?"],
+	 "respuesta":["Es Pedro Sanchez"]
+	},
+	{"titulo":["¿Cuando se descubrio America?"],
+	 "respuesta":["En 1492"]
+	},
+	{"titulo":["¿Como se llaman los animales que solo comen plantas?"],
+	 "respuesta":["Son los herbivoros"]
+	}
+	]
+}
