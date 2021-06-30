@@ -5,7 +5,8 @@ from google.cloud import dialogflow as dialogflow_v2
 
 trainingSaludos = ["Hola", "Saludos", "Que tal", "hey"]
 textoAvisame = ["hola, cuando estes listo, avisame y comenzara el test de trivia"]
-
+textoListo = ["listo", "preparado", "vamos", "comencemos"]
+textoDespedida = ["El trivia ha terminado, gracias por jugar."]
 
 def create_intent(project_id, display_name, training_phrases_parts,
                   message_texts, hijo=False, father=None):
@@ -96,12 +97,24 @@ def main():
     print("intent nombre ::: ", intent1.name)
     preguntas = open('preguntas.json', encoding="utf-8").read()
     preguntasJson = json.loads(preguntas)
-    intentAnt = intent1
-    for pregunta in preguntasJson['preguntas']:
-        intent = create_intent(sys.argv[1], pregunta["titulo"][0], pregunta["titulo"], pregunta["respuesta"]
-                               , True, intentAnt.name)
-        intentAnt = intent
-        print(pregunta)
+    intent2 = create_intent(sys.argv[1], preguntasJson['preguntas'][0]["titulo"][0], textoListo,
+                            preguntasJson['preguntas'][0]["titulo"], True, intent1.name)
+    intentAnt = intent2
+    for indx, pregunta in enumerate(preguntasJson['preguntas']):
+        if pregunta == preguntasJson['preguntas'][-1]:
+            intent = create_intent(sys.argv[1],
+                                   "Despedida",
+                                   pregunta["respuesta"],
+                                   textoDespedida,
+                                   True, intentAnt.name)
+        else:
+            intent = create_intent(sys.argv[1],
+                                   preguntasJson['preguntas'][(indx + 1) % len(preguntasJson['preguntas'])]["titulo"][0],
+                                   pregunta["respuesta"],
+                                   preguntasJson['preguntas'][(indx + 1) % len(preguntasJson['preguntas'])]["titulo"],
+                                   True, intentAnt.name)
+            intentAnt = intent
+            print(indx, pregunta)
 
 if __name__ == "__main__":
     main()
