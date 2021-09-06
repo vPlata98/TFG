@@ -2,11 +2,13 @@ import sys
 import json
 import argparse
 from google.cloud import dialogflow as dialogflow_v2
+from read import readXMLFile
 
 trainingSaludos = ["Hola", "Saludos", "Que tal", "hey"]
 textoAvisame = ["hola, cuando estes listo, avisame y comenzara el test de trivia"]
 textoListo = ["listo", "preparado", "vamos", "comencemos"]
 textoDespedida = ["El trivia ha terminado, gracias por jugar."]
+
 
 def create_intent(project_id, display_name, training_phrases_parts,
                   message_texts, hijo=False, father=None):
@@ -42,8 +44,9 @@ def create_intent(project_id, display_name, training_phrases_parts,
             messages=responses,
             output_contexts=[
                 dialogflow_v2.Context(
-                    name=dialogflow_v2.ContextsClient.context_path(display_name, "-", "next-output"), lifespan_count=1)],
-            #input_context_names=["projects/" + project_id + "/agent/sessions/-/contexts/name"],
+                    name=dialogflow_v2.ContextsClient.context_path(display_name, "-", "next-output"),
+                    lifespan_count=1)],
+            # input_context_names=["projects/" + project_id + "/agent/sessions/-/contexts/name"],
             webhook_state=dialogflow_v2.Intent.WebhookState.WEBHOOK_STATE_ENABLED,
             # is_fallback=True,
             parent_followup_intent_name=father,
@@ -57,12 +60,13 @@ def create_intent(project_id, display_name, training_phrases_parts,
             messages=responses,
             output_contexts=[
                 dialogflow_v2.Context(
-                    name=dialogflow_v2.ContextsClient.context_path(display_name, "-", "next-output"), lifespan_count=1)],
-            #input_context_names=["projects/" + project_id + "/agent/sessions/-/contexts/name"],
+                    name=dialogflow_v2.ContextsClient.context_path(display_name, "-", "next-output"),
+                    lifespan_count=1)],
+            # input_context_names=["projects/" + project_id + "/agent/sessions/-/contexts/name"],
             webhook_state=dialogflow_v2.Intent.WebhookState.WEBHOOK_STATE_ENABLED,
             # is_fallback=True,
-            #parent_followup_intent_name=parent + "/intents/" + id[0],
-            #followup_intent_info=[followup]
+            # parent_followup_intent_name=parent + "/intents/" + id[0],
+            # followup_intent_info=[followup]
 
         )
 
@@ -100,21 +104,23 @@ def main():
     intent2 = create_intent(sys.argv[1], preguntasJson['preguntas'][0]["titulo"][0], textoListo,
                             preguntasJson['preguntas'][0]["titulo"], True, intent1.name)
     intentAnt = intent2
-    for indx, pregunta in enumerate(preguntasJson['preguntas']):
-        if pregunta == preguntasJson['preguntas'][-1]:
+    preguntas = readXMLFile()
+    for indx, pregunta in enumerate(preguntas):
+        if pregunta[0] == preguntas[-1][0]:
             intent = create_intent(sys.argv[1],
                                    "Despedida",
-                                   pregunta["respuesta"],
+                                   pregunta[1],
                                    textoDespedida,
                                    True, intentAnt.name)
         else:
             intent = create_intent(sys.argv[1],
-                                   preguntasJson['preguntas'][(indx + 1) % len(preguntasJson['preguntas'])]["titulo"][0],
-                                   pregunta["respuesta"],
-                                   preguntasJson['preguntas'][(indx + 1) % len(preguntasJson['preguntas'])]["titulo"],
+                                   preguntas[(indx + 1) % len(preguntas)][0],
+                                   pregunta[1],
+                                   preguntas[(indx + 1) % len(preguntas)][0],
                                    True, intentAnt.name)
             intentAnt = intent
             print(indx, pregunta)
+
 
 if __name__ == "__main__":
     main()
