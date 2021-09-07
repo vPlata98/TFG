@@ -27,10 +27,16 @@ def create_intent(project_id, display_name, training_phrases_parts,
         training_phrases.append(training_phrase)
     responses = []
     # for message in message_texts:
+
     message_response_txt = dialogflow_v2.Intent.Message.Text(text=message_texts)
-    # print (message_response_txt)
+
+    #print("ANTES DE NADA ")
+    #print(message_response_txt)
+
     message_response = dialogflow_v2.Intent.Message(text=message_response_txt)
-    # print (message_response)
+
+    #print("DESPUES ")
+    #print(message_response)
     responses.append(message_response)
     # print (responses)
     text = dialogflow_v2.Intent.Message.Text(text=message_texts)
@@ -101,20 +107,20 @@ def main():
     print("intent nombre ::: ", intent1.name)
     preguntas = open('preguntas.json', encoding="utf-8").read()
     preguntasJson = json.loads(preguntas)
-    intent2 = create_intent(sys.argv[1], preguntasJson['preguntas'][0]["titulo"][0], textoListo,
-                            preguntasJson['preguntas'][0]["titulo"], True, intent1.name)
-    intentAnt = intent2
     preguntas = readXMLFile()
+    intent2 = create_intent(sys.argv[1], preguntas[0][0][0], textoListo,
+                            preguntas[0][0], True, intent1.name)
+    intentAnt = intent2
     for indx, pregunta in enumerate(preguntas):
         if pregunta[0] == preguntas[-1][0]:
-            intent = create_intent(sys.argv[1],
-                                   "Despedida",
-                                   pregunta[1],
-                                   textoDespedida,
-                                   True, intentAnt.name)
+            create_intent(sys.argv[1],
+                          "Despedida",
+                          pregunta[1],
+                          textoDespedida,
+                          True, intentAnt.name)
         else:
             intent = create_intent(sys.argv[1],
-                                   preguntas[(indx + 1) % len(preguntas)][0],
+                                   preguntas[(indx + 1) % len(preguntas)][0][0],
                                    pregunta[1],
                                    preguntas[(indx + 1) % len(preguntas)][0],
                                    True, intentAnt.name)

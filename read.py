@@ -7,16 +7,21 @@ def readXMLFile():
     raiz = arbol.getroot()
     preguntas = []
     respuestas = []
+
     for nodoPregunta in raiz.findall("question")[1:]:
+        pregunta = []
         preguntaRaw = nodoPregunta.find("questiontext")[0].text
-        pregunta = preguntaRaw[preguntaRaw.find(">") + 1:preguntaRaw.rfind("<")]
+        pregunta.append(preguntaRaw[preguntaRaw.find(">") + 1:preguntaRaw.rfind("<")])
         preguntas.append(pregunta)
 
         for respuesta in nodoPregunta.iter("answer"):
             if respuesta.get("fraction") == "100":
+                respuestaAct = []
                 respuestaRaw = respuesta[0].text
-                respuestas.append(respuestaRaw[respuestaRaw.find(">") + 1:respuestaRaw.rfind("<")])
+                respuestaAct.append(respuestaRaw[respuestaRaw.find(">") + 1:respuestaRaw.rfind("<")])
+                respuestas.append(respuestaAct)
 
+    #print(list(zip(preguntas, respuestas)))
     return list(zip(preguntas, respuestas))
 
 
