@@ -1,6 +1,8 @@
 import sys
 import json
 import argparse
+import random
+
 from google.cloud import dialogflow as dialogflow_v2
 from read import readXMLFile
 
@@ -100,32 +102,35 @@ def _get_intent_ids(project_id, display_name):
     return intent_ids
 
 
-def main():
-    # print("Hello World!")
-    # print(sys.argv[1],sys.argv[2], sys.argv[3],sys.argv[4])
-    intent1 = create_intent(sys.argv[1], sys.argv[2], trainingSaludos, textoAvisame)
-    print("intent nombre ::: ", intent1.name)
-    preguntas = open('preguntas.json', encoding="utf-8").read()
-    preguntasJson = json.loads(preguntas)
+def createMultiplechoice(info):
     preguntas = readXMLFile()
-    intent2 = create_intent(sys.argv[1], preguntas[0][0][0], textoListo,
+
+def formIntent(preguntas):
+    intent1 = create_intent(sys.argv[1], sys.argv[2], trainingSaludos, textoAvisame)
+    intent2 = create_intent(sys.argv[1], preguntas[0][0][0] + " "
+                            + " ".join(random.sample(preguntas[0][1], len(preguntas[0][1]))), textoListo,
                             preguntas[0][0], True, intent1.name)
     intentAnt = intent2
     for indx, pregunta in enumerate(preguntas):
         if pregunta[0] == preguntas[-1][0]:
             create_intent(sys.argv[1],
                           "Despedida",
-                          pregunta[1],
+                          [pregunta[1][0]],
                           textoDespedida,
                           True, intentAnt.name)
         else:
             intent = create_intent(sys.argv[1],
-                                   preguntas[(indx + 1) % len(preguntas)][0][0],
-                                   pregunta[1],
+                                   preguntas[(indx + 1) % len(preguntas)][0][0] + " "
+                                   + " ".join(random.sample(preguntas[(indx + 1) % len(preguntas)][1],
+                                                            len(preguntas[(indx + 1) % len(preguntas)][1]))),
+                                   [pregunta[1][0]],
                                    preguntas[(indx + 1) % len(preguntas)][0],
                                    True, intentAnt.name)
             intentAnt = intent
             print(indx, pregunta)
+
+def main():
+    formIntent(readXMLFile())
 
 
 if __name__ == "__main__":

@@ -143,8 +143,8 @@
       <text>Respuesta incorrecta.</text>
     </incorrectfeedback>
     <shownumcorrect/>
-    <answer fraction="0" format="html">
-      <text><![CDATA[<p dir="ltr" style="text-align: left;">Es Rajoy</p>]]></text>
+    <answer fraction="100" format="html">
+      <text><![CDATA[<p dir="ltr" style="text-align: left;">Es Mario Draghi</p>]]></text>
       <feedback format="html">
         <text></text>
       </feedback>
@@ -155,8 +155,8 @@
         <text></text>
       </feedback>
     </answer>
-    <answer fraction="100" format="html">
-      <text><![CDATA[<p dir="ltr" style="text-align: left;">Es Mario Draghi</p>]]></text>
+    <answer fraction="0" format="html">
+      <text><![CDATA[<p dir="ltr" style="text-align: left;">Es Rajoy</p>]]></text>
       <feedback format="html">
         <text></text>
       </feedback>
