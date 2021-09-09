@@ -38,7 +38,7 @@
     </incorrectfeedback>
     <shownumcorrect/>
     <selectoption>
-      <text>70 grados</text>
+      <text>100 grados</text>
       <group>1</group>
     </selectoption>
     <selectoption>
@@ -50,7 +50,7 @@
       <group>1</group>
     </selectoption>
     <selectoption>
-      <text>100 grados</text>
+      <text>70 grados</text>
       <group>1</group>
     </selectoption>
   </question>
@@ -134,6 +134,35 @@
       <text>El comportamiento de los herbívoros se caracteriza por comer plantas y otros animales</text>
       <feedback format="html">
         <text></text>
+      </feedback>
+    </answer>
+  </question>
+
+  <!-- question: 5  -->
+  <question type="truefalse">
+    <name>
+      <text>question 4</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p dir="ltr" style="text-align: left;">América se descubrió en 1492</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>1.0000000</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+    <answer fraction="100" format="moodle_auto_format">
+      <text>true</text>
+      <feedback format="html">
+        <text><![CDATA[<p dir="ltr" style="text-align: left;">Es cierto</p>]]></text>
+      </feedback>
+    </answer>
+    <answer fraction="0" format="moodle_auto_format">
+      <text>false</text>
+      <feedback format="html">
+        <text>Era verdadero se descubrió en 1492</text>
       </feedback>
     </answer>
   </question>

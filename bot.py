@@ -32,13 +32,13 @@ def create_intent(project_id, display_name, training_phrases_parts,
 
     message_response_txt = dialogflow_v2.Intent.Message.Text(text=message_texts)
 
-    #print("ANTES DE NADA ")
-    #print(message_response_txt)
+    # print("ANTES DE NADA ")
+    # print(message_response_txt)
 
     message_response = dialogflow_v2.Intent.Message(text=message_response_txt)
 
-    #print("DESPUES ")
-    #print(message_response)
+    # print("DESPUES ")
+    # print(message_response)
     responses.append(message_response)
     # print (responses)
     text = dialogflow_v2.Intent.Message.Text(text=message_texts)
@@ -102,14 +102,12 @@ def _get_intent_ids(project_id, display_name):
     return intent_ids
 
 
-def createMultiplechoice(info):
-    preguntas = readXMLFile()
-
 def formIntent(preguntas):
     intent1 = create_intent(sys.argv[1], sys.argv[2], trainingSaludos, textoAvisame)
-    intent2 = create_intent(sys.argv[1], preguntas[0][0][0] + " "
-                            + " ".join(random.sample(preguntas[0][1], len(preguntas[0][1]))), textoListo,
-                            preguntas[0][0], True, intent1.name)
+    intent2 = create_intent(sys.argv[1], preguntas[0][0][0], textoListo, [preguntas[0][0][0] + " "
+                                                                          + " ".join(
+        random.sample(preguntas[0][1], len(preguntas[0][1])))],
+                            True, intent1.name)
     intentAnt = intent2
     for indx, pregunta in enumerate(preguntas):
         if pregunta[0] == preguntas[-1][0]:
@@ -120,14 +118,15 @@ def formIntent(preguntas):
                           True, intentAnt.name)
         else:
             intent = create_intent(sys.argv[1],
-                                   preguntas[(indx + 1) % len(preguntas)][0][0] + " "
-                                   + " ".join(random.sample(preguntas[(indx + 1) % len(preguntas)][1],
-                                                            len(preguntas[(indx + 1) % len(preguntas)][1]))),
+                                   preguntas[(indx + 1) % len(preguntas)][0][0],
                                    [pregunta[1][0]],
-                                   preguntas[(indx + 1) % len(preguntas)][0],
+                                   [preguntas[(indx + 1) % len(preguntas)][0][0] + " "
+                                    + " ".join(random.sample(preguntas[(indx + 1) % len(preguntas)][1],
+                                                             len(preguntas[(indx + 1) % len(preguntas)][1])))],
                                    True, intentAnt.name)
             intentAnt = intent
             print(indx, pregunta)
+
 
 def main():
     formIntent(readXMLFile())
