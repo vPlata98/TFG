@@ -1,3 +1,4 @@
+import sys
 from xml.dom import minidom
 import xml.etree.ElementTree as ET
 
@@ -92,8 +93,8 @@ def gapSelect(nodoPregunta):
     return list(zip(preguntas, respuestasAll))
 
 
-def readXMLFile():
-    arbol = ET.parse('preguntasXML.xml')
+def readXMLFile(file):
+    arbol = ET.parse(file)
     raiz = arbol.getroot()
     preguntas = []
     for nodoPregunta in raiz.findall("question")[1:]:
@@ -110,4 +111,4 @@ def readXMLFile():
 
 
 if __name__ == "__main__":
-    raiz = readXMLFile()
+    raiz = readXMLFile(sys.argv[1])
