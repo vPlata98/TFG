@@ -89,7 +89,7 @@ def gapSelect(nodoPregunta):
             respuestas.append(respuestaRaw)
 
     respuestasAll.append(respuestas)
-    print(list(zip(preguntas, respuestasAll)))
+    #print(list(zip(preguntas, respuestasAll)))
     return list(zip(preguntas, respuestasAll))
 
 
@@ -106,7 +106,7 @@ def readXMLFile(file):
             preguntas.append(shortAnswer(nodoPregunta))
         elif nodoPregunta.get("type") == "gapselect":
             preguntas.append(gapSelect(nodoPregunta))
-    print(sum(preguntas, []))
+    #print(sum(preguntas, []))
     return sum(preguntas, [])
 
 
