@@ -7,9 +7,10 @@ from google.cloud import dialogflow as dialogflow_v2
 from read import readXMLFile
 
 trainingSaludos = ["Hola", "Saludos", "Que tal", "hey"]
+trainingDespedida = ["Adios", "Hasta luego", "Chao", "Nos vemos"]
 textoAvisame = ["hola, cuando estes listo, avisame y comenzara el test de trivia"]
 textoListo = ["listo", "preparado", "vamos", "comencemos"]
-textoDespedida = ["El trivia ha terminado, gracias por jugar."]
+textoDespedida = ["El trivia ha terminado, gracias por jugar. Despidete para obtener tu nota."]
 
 
 def create_intent(project_id, display_name, training_phrases_parts,
@@ -110,10 +111,16 @@ def formIntent(preguntas):
     intentAnt = intent2
     for indx, pregunta in enumerate(preguntas):
         if pregunta[0] == preguntas[-1][0]:
+            intent = create_intent(sys.argv[1],
+                                   "Despedida",
+                                   pregunta[1],
+                                   textoDespedida,
+                                   True, intentAnt.name)
+            intentAnt = intent
             create_intent(sys.argv[1],
-                          "Despedida",
-                          pregunta[1],
-                          textoDespedida,
+                          "Despedida Usuario",
+                          trainingDespedida,
+                          [],
                           True, intentAnt.name)
         else:
             intent = create_intent(sys.argv[1],

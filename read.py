@@ -75,11 +75,9 @@ def gapSelect(nodoPregunta):
     pregunta = []
     preguntaRaw = nodoPregunta.find("questiontext")[0].text
     correcta = int(preguntaRaw[preguntaRaw.find("[[") + 2]) - 1
-    newPregunta = preguntaRaw.replace(str(correcta+1), "_")
+    newPregunta = preguntaRaw.replace(str(correcta + 1), "_")
     pregunta.append(newPregunta[newPregunta.find(">") + 1:newPregunta.rfind("<")])
     preguntas.append(pregunta)
-
-
 
     for indx, respuesta in enumerate(nodoPregunta.iter("selectoption")):
         respuestaRaw = respuesta[0].text
@@ -89,7 +87,7 @@ def gapSelect(nodoPregunta):
             respuestas.append(respuestaRaw)
 
     respuestasAll.append(respuestas)
-    #print(list(zip(preguntas, respuestasAll)))
+    # print(list(zip(preguntas, respuestasAll)))
     return list(zip(preguntas, respuestasAll))
 
 
@@ -106,7 +104,7 @@ def readXMLFile(file):
             preguntas.append(shortAnswer(nodoPregunta))
         elif nodoPregunta.get("type") == "gapselect":
             preguntas.append(gapSelect(nodoPregunta))
-    #print(sum(preguntas, []))
+    print(sum(preguntas, []))
     return sum(preguntas, [])
 
 
