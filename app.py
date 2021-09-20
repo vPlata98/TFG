@@ -1,6 +1,6 @@
 from logging import INFO
 from typing import Dict
-from read import readXMLFile
+from read import conseguirNotas
 from flask import Flask, request, jsonify
 from flask.logging import create_logger
 
@@ -11,15 +11,19 @@ app = Flask(__name__)
 logger = create_logger(app)
 logger.setLevel(INFO)
 preguntasUsuario = []
-nota = 0
+nota = [[0]]
 
 
 def calculoNota(respuestasUsuario):
     global nota
-    preguntasQuiz = readXMLFile("preguntasXML.xml")
-    for index, pregunta in enumerate(preguntasQuiz):
-        if pregunta[1][0].lower() == respuestasUsuario[index].lower():
-            nota += 1
+    respuestas = conseguirNotas("preguntasXML.xml")
+    for index, respuesta in enumerate(respuestasUsuario):
+        respuestasCorrectas = [x for x in respuestas.keys() if x.lower() == respuesta.lower()]
+        nota.append([respuestas[puntuacion] / 100 for puntuacion in respuestasCorrectas])
+        print(nota)
+    nota = sum(nota, [])
+    nota = sum(nota)
+
 
 
 def handler(agent: WebhookClient) -> None:
@@ -40,7 +44,6 @@ def webhook() -> Dict:
     global nota
     data = request.get_json(silent=True)
     # print(data)
-    preguntas = readXMLFile("preguntasXML.xml")
     if data['queryResult']['queryText'] == 'adios':
         print(preguntasUsuario[2:])
         calculoNota(preguntasUsuario[2:])

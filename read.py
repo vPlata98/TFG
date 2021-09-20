@@ -91,6 +91,37 @@ def gapSelect(nodoPregunta):
     return list(zip(preguntas, respuestasAll))
 
 
+def conseguirNotas(file):
+    arbol = ET.parse(file)
+    raiz = arbol.getroot()
+    respuestas = {}
+    for nodoPregunta in raiz.findall("question")[1:]:
+        for index, respuesta in enumerate(nodoPregunta.iter("selectoption")):
+            preguntaRaw = nodoPregunta.find("questiontext")[0].text
+            correcta = int(preguntaRaw[preguntaRaw.find("[[") + 2]) - 1
+            if respuesta[0].text.find(">") != -1:
+                if index == correcta:
+                    respuestas[respuesta[0].text[respuesta[0].text.find(">") + 1:respuesta[0].text.rfind("<")]] = 100
+                else:
+                    respuestas[respuesta[0].text[respuesta[0].text.find(">") + 1:respuesta[0].text.rfind("<")]] = 0
+            else:
+                if index == correcta:
+                    respuestas[respuesta[0].text] = 100
+                else:
+                    respuestas[respuesta[0].text] = 0
+        for respuesta in nodoPregunta.iter("answer"):
+            if nodoPregunta.get("type") == "truefalse":
+                if respuesta[0].text == "true":
+                    respuestas["Verdadero"] = int(respuesta.get("fraction"))
+                else:
+                    respuestas["Falso"] = int(respuesta.get("fraction"))
+            elif respuesta[0].text.find(">") != -1:
+                respuestas[respuesta[0].text[respuesta[0].text.find(">") + 1:respuesta[0].text.rfind("<")]] = \
+                    int(respuesta.get("fraction"))
+            else:
+                respuestas[respuesta[0].text] = int(respuesta.get("fraction"))
+    return respuestas
+
 def readXMLFile(file):
     arbol = ET.parse(file)
     raiz = arbol.getroot()
@@ -104,9 +135,10 @@ def readXMLFile(file):
             preguntas.append(shortAnswer(nodoPregunta))
         elif nodoPregunta.get("type") == "gapselect":
             preguntas.append(gapSelect(nodoPregunta))
-    print(sum(preguntas, []))
+    #print(sum(preguntas, []))
     return sum(preguntas, [])
 
 
 if __name__ == "__main__":
     raiz = readXMLFile(sys.argv[1])
+    print(conseguirNotas(sys.argv[1]))
