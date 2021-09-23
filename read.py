@@ -20,7 +20,7 @@ def shortAnswer(nodoPregunta):
             respuestas.append(respuestaRaw)
 
     respuestasAll.append(respuestas)
-    return list(zip(preguntas, respuestasAll))
+    return list(zip(preguntas, respuestasAll, ["shortAnswer"]))
 
 
 def trueFalse(nodoPregunta):
@@ -42,7 +42,7 @@ def trueFalse(nodoPregunta):
             respuestas.append("Falso")
 
     respuestasAll.append(respuestas)
-    return list(zip(preguntas, respuestasAll))
+    return list(zip(preguntas, respuestasAll, ["trueFalse"]))
 
 
 def multiplechoice(nodoPregunta):
@@ -64,7 +64,7 @@ def multiplechoice(nodoPregunta):
             respuestas.append(respuestaRaw[respuestaRaw.find(">") + 1:respuestaRaw.rfind("<")])
 
     respuestasAll.append(respuestas)
-    return list(zip(preguntas, respuestasAll))
+    return list(zip(preguntas, respuestasAll, ["multichoice"]))
 
 
 def gapSelect(nodoPregunta):
@@ -88,7 +88,7 @@ def gapSelect(nodoPregunta):
 
     respuestasAll.append(respuestas)
     # print(list(zip(preguntas, respuestasAll)))
-    return list(zip(preguntas, respuestasAll))
+    return list(zip(preguntas, respuestasAll, ["gapSelect"]))
 
 
 def conseguirNotas(file):
@@ -135,10 +135,10 @@ def readXMLFile(file):
             preguntas.append(shortAnswer(nodoPregunta))
         elif nodoPregunta.get("type") == "gapselect":
             preguntas.append(gapSelect(nodoPregunta))
-    #print(sum(preguntas, []))
+    print(sum(preguntas, []))
     return sum(preguntas, [])
 
 
 if __name__ == "__main__":
     raiz = readXMLFile(sys.argv[1])
-    print(conseguirNotas(sys.argv[1]))
+    #print(conseguirNotas(sys.argv[1]))

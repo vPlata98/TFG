@@ -25,7 +25,6 @@ def calculoNota(respuestasUsuario):
     nota = sum(nota)
 
 
-
 def handler(agent: WebhookClient) -> None:
     """
     Handle the webhook request.
@@ -51,7 +50,7 @@ def webhook() -> Dict:
             "fulfillmentText": "Tu nota es la siguiente " + str(nota) + "/" + str(len(preguntasUsuario[2:])),
         }
         preguntasUsuario.clear()
-        nota = 0
+        nota = [[0]]
         return jsonify(reply)
     agent = WebhookClient(data)
     agent.handle_request(handler)
