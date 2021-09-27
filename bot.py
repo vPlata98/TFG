@@ -15,7 +15,7 @@ textoDespedida = ["El trivia ha terminado, gracias por jugar. Despidete para obt
 
 
 def create_intent(project_id, display_name, training_phrases_parts,
-                  message_texts, type, hijo=False, father=None):
+                  message_texts, type, imgInfo=None, hijo=False, father=None):
     """Create an intent of the given intent type."""
 
     intents_client = dialogflow_v2_beta.IntentsClient()
@@ -39,9 +39,17 @@ def create_intent(project_id, display_name, training_phrases_parts,
                                                                               quick_replies=message_texts[1])
         message_response = dialogflow_v2_beta.Intent.Message(quick_replies=message_response_txt)
     elif type == "multichoice":
-        message_response_txt = dialogflow_v2_beta.Intent.Message.Card(title=message_texts[0][0],
-                                                                      buttons=creadorBotones(message_texts[1]))
+        if imgInfo is None:
+            message_response_txt = dialogflow_v2_beta.Intent.Message.Card(title=message_texts[0][0],
+                                                                          buttons=creadorBotones(message_texts[1]),
+                                                                          image_uri=imgInfo)
+
+        else:
+            message_response_txt = dialogflow_v2_beta.Intent.Message.Card(title=message_texts[0][0],
+                                                                          buttons=creadorBotones(message_texts[1]),
+                                                                          image_uri=imgInfo)
         message_response = dialogflow_v2_beta.Intent.Message(card=message_response_txt)
+
     elif type == "normal":
         message_response_txt = dialogflow_v2_beta.Intent.Message.Text(text=message_texts)
         message_response = dialogflow_v2_beta.Intent.Message(text=message_response_txt)
@@ -121,6 +129,7 @@ def formIntent(preguntas):
     print(message)
     intent2 = create_intent(sys.argv[1], preguntas[0][0][0], textoListo, message,
                             preguntas[0][2],
+                            preguntas[0][3],
                             True, intent1.name)
     intentAnt = intent2
     for indx, pregunta in enumerate(preguntas):
@@ -130,6 +139,7 @@ def formIntent(preguntas):
                                    pregunta[1],
                                    textoDespedida,
                                    "normal",
+                                   pregunta[3],
                                    True, intentAnt.name)
             intentAnt = intent
             create_intent(sys.argv[1],
@@ -137,6 +147,7 @@ def formIntent(preguntas):
                           trainingDespedida,
                           [],
                           "normal",
+                          None,
                           True, intentAnt.name)
         else:
             intent = create_intent(sys.argv[1],
@@ -146,6 +157,7 @@ def formIntent(preguntas):
                                    [random.sample(preguntas[(indx + 1) % len(preguntas)][1],
                                                   len(preguntas[(indx + 1) % len(preguntas)][1]))],
                                    preguntas[(indx + 1) % len(preguntas)][2],
+                                   preguntas[(indx + 1) % len(preguntas)][3],
                                    True, intentAnt.name)
             intentAnt = intent
             print(indx, pregunta)

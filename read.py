@@ -1,6 +1,8 @@
 import sys
+import re
 from xml.dom import minidom
 import xml.etree.ElementTree as ET
+from HTMLParser import MyHTMLParser
 
 
 def shortAnswer(nodoPregunta):
@@ -20,7 +22,7 @@ def shortAnswer(nodoPregunta):
             respuestas.append(respuestaRaw)
 
     respuestasAll.append(respuestas)
-    return list(zip(preguntas, respuestasAll, ["shortAnswer"]))
+    return list(zip(preguntas, respuestasAll, ["shortAnswer"], [None]))
 
 
 def trueFalse(nodoPregunta):
@@ -42,7 +44,7 @@ def trueFalse(nodoPregunta):
             respuestas.append("Falso")
 
     respuestasAll.append(respuestas)
-    return list(zip(preguntas, respuestasAll, ["trueFalse"]))
+    return list(zip(preguntas, respuestasAll, ["trueFalse"], [None]))
 
 
 def multiplechoice(nodoPregunta):
@@ -52,9 +54,12 @@ def multiplechoice(nodoPregunta):
     respuestas = []
     pregunta = []
     preguntaRaw = nodoPregunta.find("questiontext")[0].text
-    pregunta.append(preguntaRaw[preguntaRaw.find(">") + 1:preguntaRaw.rfind("<")])
+    parser = MyHTMLParser()
+    parser.feed(preguntaRaw)
+    pregunta.append(parser.data)
     preguntas.append(pregunta)
-
+    # image = ([element.get('src') for element in
+    #          re.findall('img', preguntaRaw)], [element.get('alt') for element in re.findall('img', preguntaRaw)])
     for respuesta in nodoPregunta.iter("answer"):
         respuestaAct = []
         respuestaRaw = respuesta[0].text
@@ -63,8 +68,10 @@ def multiplechoice(nodoPregunta):
         else:
             respuestas.append(respuestaRaw[respuestaRaw.find(">") + 1:respuestaRaw.rfind("<")])
 
+    print("DIC")
+    print(parser.imgInfo)
     respuestasAll.append(respuestas)
-    return list(zip(preguntas, respuestasAll, ["multichoice"]))
+    return list(zip(preguntas, respuestasAll, ["multichoice"], parser.imgInfo["src"]))
 
 
 def gapSelect(nodoPregunta):
@@ -88,7 +95,7 @@ def gapSelect(nodoPregunta):
 
     respuestasAll.append(respuestas)
     # print(list(zip(preguntas, respuestasAll)))
-    return list(zip(preguntas, respuestasAll, ["gapSelect"]))
+    return list(zip(preguntas, respuestasAll, ["gapSelect"], [None]))
 
 
 def conseguirNotas(file):
@@ -122,6 +129,7 @@ def conseguirNotas(file):
                 respuestas[respuesta[0].text] = int(respuesta.get("fraction"))
     return respuestas
 
+
 def readXMLFile(file):
     arbol = ET.parse(file)
     raiz = arbol.getroot()
@@ -141,4 +149,4 @@ def readXMLFile(file):
 
 if __name__ == "__main__":
     raiz = readXMLFile(sys.argv[1])
-    #print(conseguirNotas(sys.argv[1]))
+    # print(conseguirNotas(sys.argv[1]))
