@@ -10,6 +10,7 @@ class MyHTMLParser(HTMLParser):
                 self.imgInfo[attr[0]] = [attr[1]]
             else:
                 self.imgInfo["src"] = [None]
+                self.imgInfo["alt"] = [None]
         print(self.imgInfo)
 
     def handle_endtag(self, tag):

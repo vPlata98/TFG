@@ -39,15 +39,10 @@ def create_intent(project_id, display_name, training_phrases_parts,
                                                                               quick_replies=message_texts[1])
         message_response = dialogflow_v2_beta.Intent.Message(quick_replies=message_response_txt)
     elif type == "multichoice":
-        if imgInfo is None:
-            message_response_txt = dialogflow_v2_beta.Intent.Message.Card(title=message_texts[0][0],
-                                                                          buttons=creadorBotones(message_texts[1]),
-                                                                          image_uri=imgInfo)
-
-        else:
-            message_response_txt = dialogflow_v2_beta.Intent.Message.Card(title=message_texts[0][0],
-                                                                          buttons=creadorBotones(message_texts[1]),
-                                                                          image_uri=imgInfo)
+        message_response_txt = dialogflow_v2_beta.Intent.Message.Card(title=message_texts[0][0],
+                                                                      buttons=creadorBotones(message_texts[1]),
+                                                                      image_uri=imgInfo[0],
+                                                                      subtitle=imgInfo[1])
         message_response = dialogflow_v2_beta.Intent.Message(card=message_response_txt)
 
     elif type == "normal":
@@ -171,7 +166,11 @@ def creadorBotones(bot):
 
 
 def main():
-    formIntent(readXMLFile(sys.argv[3]))
+    if sys.argv[2] == "download":
+        download = dialogflow_v2_beta.services.agents.AgentsAsyncClient.export_agent(parent=sys.argv[1])
+        print(download)
+    else:
+        formIntent(readXMLFile(sys.argv[3]))
 
 
 if __name__ == "__main__":

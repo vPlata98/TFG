@@ -11,6 +11,8 @@ def shortAnswer(nodoPregunta):
     respuestas = []
 
     pregunta = nodoPregunta.find("questiontext")[0].text
+    parser = MyHTMLParser()
+    parser.feed(pregunta)
 
     preguntas.append([pregunta])
 
@@ -22,7 +24,7 @@ def shortAnswer(nodoPregunta):
             respuestas.append(respuestaRaw)
 
     respuestasAll.append(respuestas)
-    return list(zip(preguntas, respuestasAll, ["shortAnswer"], [None]))
+    return list(zip(preguntas, respuestasAll, ["shortAnswer"], ([None], [None])))
 
 
 def trueFalse(nodoPregunta):
@@ -33,7 +35,9 @@ def trueFalse(nodoPregunta):
     respuestas = []
     pregunta = []
     preguntaRaw = nodoPregunta.find("questiontext")[0].text
-    pregunta.append(preguntaRaw[preguntaRaw.find(">") + 1:preguntaRaw.rfind("<")])
+    parser = MyHTMLParser()
+    parser.feed(preguntaRaw)
+    pregunta.append(parser.data)
     preguntas.append(pregunta)
 
     for respuesta in nodoPregunta.iter("answer"):
@@ -44,7 +48,8 @@ def trueFalse(nodoPregunta):
             respuestas.append("Falso")
 
     respuestasAll.append(respuestas)
-    return list(zip(preguntas, respuestasAll, ["trueFalse"], [None]))
+    img = [parser.imgInfo["src"] + parser.imgInfo["alt"]]
+    return list(zip(preguntas, respuestasAll, ["trueFalse"], img))
 
 
 def multiplechoice(nodoPregunta):
@@ -58,8 +63,7 @@ def multiplechoice(nodoPregunta):
     parser.feed(preguntaRaw)
     pregunta.append(parser.data)
     preguntas.append(pregunta)
-    # image = ([element.get('src') for element in
-    #          re.findall('img', preguntaRaw)], [element.get('alt') for element in re.findall('img', preguntaRaw)])
+
     for respuesta in nodoPregunta.iter("answer"):
         respuestaAct = []
         respuestaRaw = respuesta[0].text
@@ -71,7 +75,8 @@ def multiplechoice(nodoPregunta):
     print("DIC")
     print(parser.imgInfo)
     respuestasAll.append(respuestas)
-    return list(zip(preguntas, respuestasAll, ["multichoice"], parser.imgInfo["src"]))
+    img = [parser.imgInfo["src"] + parser.imgInfo["alt"]]
+    return list(zip(preguntas, respuestasAll, ["multichoice"], img))
 
 
 def gapSelect(nodoPregunta):
@@ -81,9 +86,11 @@ def gapSelect(nodoPregunta):
     respuestas = []
     pregunta = []
     preguntaRaw = nodoPregunta.find("questiontext")[0].text
+    parser = MyHTMLParser()
+    parser.feed(preguntaRaw)
+    pregunta.append(parser.data)
+    preguntas.append(pregunta)
     correcta = int(preguntaRaw[preguntaRaw.find("[[") + 2]) - 1
-    newPregunta = preguntaRaw.replace(str(correcta + 1), "_")
-    pregunta.append(newPregunta[newPregunta.find(">") + 1:newPregunta.rfind("<")])
     preguntas.append(pregunta)
 
     for indx, respuesta in enumerate(nodoPregunta.iter("selectoption")):
@@ -95,7 +102,8 @@ def gapSelect(nodoPregunta):
 
     respuestasAll.append(respuestas)
     # print(list(zip(preguntas, respuestasAll)))
-    return list(zip(preguntas, respuestasAll, ["gapSelect"], [None]))
+    img = [parser.imgInfo["src"] + parser.imgInfo["alt"]]
+    return list(zip(preguntas, respuestasAll, ["gapSelect"], img))
 
 
 def conseguirNotas(file):

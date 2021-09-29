@@ -1,7 +1,7 @@
 from logging import INFO
 from typing import Dict
 from read import conseguirNotas
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask.logging import create_logger
 
 from dialogflow_fulfillment import WebhookClient, QuickReplies
@@ -59,9 +59,13 @@ def webhook() -> Dict:
     return agent.response
 
 
-@app.route('/')
+@app.route('/', methods=['POST', 'GET'])
 def index():
-    return 'Hello, Flask!'
+    if request.method == "POST":
+        print(request.form["file0"])
+        return "Conseguido!!"
+    else:
+        return render_template('index.html')
 
 
 if __name__ == '__main__':
