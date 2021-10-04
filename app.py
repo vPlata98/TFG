@@ -1,9 +1,12 @@
+import os
 from logging import INFO
+from werkzeug.utils import secure_filename
 from typing import Dict
-from read import conseguirNotas
+from read import conseguirNotas, readXMLFile
 from flask import Flask, request, jsonify, render_template
 from flask.logging import create_logger
-
+from bot import formIntent
+from google.cloud import storage
 from dialogflow_fulfillment import WebhookClient, QuickReplies
 
 # Create Flask app and enable info level logging
@@ -12,7 +15,8 @@ logger = create_logger(app)
 logger.setLevel(INFO)
 preguntasUsuario = []
 nota = [[0]]
-
+uploads_dir = os.path.join(app.instance_path, 'uploads')
+os.makedirs(uploads_dir, exist_ok=True)
 
 def calculoNota(respuestasUsuario):
     global nota
@@ -67,6 +71,36 @@ def index():
     else:
         return render_template('index.html')
 
+
+@app.route('/prueba', methods=['POST', 'GET'])
+def prueba():
+    if request.method == 'POST':
+        print(request.files.getlist("file"))
+        for file in request.files.getlist("file"):
+            print(file.filename)
+            filename, file_extension = os.path.splitext(file.filename)
+            if file_extension == ".xml":
+                fileQuestions = file.filename
+            file.save(os.path.join(uploads_dir, secure_filename(file.filename)))
+        storage_client = explicit(os.path.join(uploads_dir, "secure.json"))
+
+        #f = request.files["file"]
+        #f.save(secure_filename(f.filename))
+        formIntent("api-brl9", "bot", readXMLFile(fileQuestions),storage_client)
+    return "<p>Hola</p>"
+
+def explicit(file):
+    # Explicitly use service account credentials by specifying the private key
+    # file.
+    storage_client = storage.Client.from_service_account_json(
+        file)
+    #os.system("export GOOGLE_APPLICATION_CREDENTIALS=" + file)
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = file
+    print(os.environ['GOOGLE_APPLICATION_CREDENTIALS'])
+    # Make an authenticated API request
+    #buckets = list(storage_client.list_buckets())
+    #print(buckets)
+    return storage_client
 
 if __name__ == '__main__':
     app.run(debug=True)
