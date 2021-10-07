@@ -11,7 +11,7 @@ class MyHTMLParser(HTMLParser):
             else:
                 self.imgInfo["src"] = [None]
                 self.imgInfo["alt"] = [None]
-        print(self.imgInfo)
+        #print(self.imgInfo)
 
     def handle_endtag(self, tag):
         print("End tag  :", tag)
@@ -19,6 +19,10 @@ class MyHTMLParser(HTMLParser):
     def handle_data(self, data):
         self.data = data
         print("Data     :", data)
+        if not self.imgInfo:
+            self.imgInfo["src"] = [None]
+            self.imgInfo["alt"] = [None]
+        print(self.imgInfo)
 
     def handle_comment(self, data):
         print("Comment  :", data)

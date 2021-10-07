@@ -15,7 +15,7 @@ textoListo = ["listo", "preparado", "vamos", "comencemos"]
 textoDespedida = ["El trivia ha terminado, gracias por jugar. Despidete para obtener tu nota."]
 
 
-def create_intent(agentClient, project_id, display_name, training_phrases_parts,
+def create_intent(project_id, display_name, training_phrases_parts,
                   message_texts, type, imgInfo=None, hijo=False, father=None):
     """Create an intent of the given intent type."""
 
@@ -119,19 +119,18 @@ def _get_intent_ids(project_id, display_name):
     return intent_ids
 
 
-def formIntent(projectCode, projectName, preguntas, agentClient):
-    intent1 = create_intent(agentClient, projectCode, projectName, trainingSaludos, textoAvisame, "normal")
+def formIntent(projectCode, projectName, preguntas):
+    intent1 = create_intent(projectCode, projectName, trainingSaludos, textoAvisame, "normal")
     message = [preguntas[0][0]] + [random.sample(preguntas[0][1], len(preguntas[0][1]))]
     print(message)
-    intent2 = create_intent(agentClient, projectCode, preguntas[0][0][0], textoListo, message,
+    intent2 = create_intent(projectCode, preguntas[0][0][0], textoListo, message,
                             preguntas[0][2],
                             preguntas[0][3],
                             True, intent1.name)
     intentAnt = intent2
     for indx, pregunta in enumerate(preguntas):
         if pregunta[0] == preguntas[-1][0]:
-            intent = create_intent(agentClient,
-                                   projectCode,
+            intent = create_intent(projectCode,
                                    "Despedida",
                                    pregunta[1],
                                    textoDespedida,
@@ -139,8 +138,7 @@ def formIntent(projectCode, projectName, preguntas, agentClient):
                                    pregunta[3],
                                    True, intentAnt.name)
             intentAnt = intent
-            create_intent(agentClient,
-                          projectCode,
+            create_intent(projectCode,
                           "Despedida Usuario",
                           trainingDespedida,
                           [],
@@ -148,8 +146,7 @@ def formIntent(projectCode, projectName, preguntas, agentClient):
                           None,
                           True, intentAnt.name)
         else:
-            intent = create_intent(agentClient,
-                                   projectCode,
+            intent = create_intent(projectCode,
                                    preguntas[(indx + 1) % len(preguntas)][0][0],
                                    pregunta[1],
                                    [preguntas[(indx + 1) % len(preguntas)][0]] +

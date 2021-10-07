@@ -44,8 +44,90 @@
         });
     }
     </script>
+    <div class="container">
+        <ul class="slider">
+            <li id="slide1">
+                <img src="{{url_for('static', filename='tutorial/paso1.png')}}" />
+                <p>Deberemos crear un proyecto nuevo pinchando en el recuadro rojo de la parte superior, posteriormente
+                pincharemos en proyecto nuevo.</p>
+            </li>
+            <li id="slide2">
+                <img src="{{url_for('static', filename='tutorial/paso2.png')}}" />
+                <p>Una vez creado el proyecto deberemos utilizar el menú desplegable de la izquierda, seleccionar
+                    API y servicios y, despues, pinchar en credenciales para crear una clave.</p>
+            </li>
+            <li id="slide3">
+                <img src="{{url_for('static', filename='tutorial/paso3.png')}}" />
+                <p>Veremos en la parte superior un botón que pone añadir credenciales (pulsaremos en cuenta de servicio),
+                    lo pulsamos y nos aparece la siguiente
+                    pantalla, deberemos rellenar los campos de la primera parte y en la segunda es fundamental que añadamos
+                    la función de propietario (si no tiene esta función, la automatización no funcionara).</p>
+            </li>
+            <li id="slide4">
+                <img src="{{url_for('static', filename='tutorial/paso4.png')}}" />
+                <p>Una vez creada la credencial necesitaremos una clave, seleccionamos la credencial y pulsamos en el icono
+                    del lapiz y se nos abrirá la siguiente pantalla, en la pestaña de arriba le daremos a claves y posteriormente
+                    a agregar clave (rectángulos rojos), especificaremos que la queremos de tipo JSON.
+                    Se nos descargara un archivo que es uno de los que deberemos seleccionar en el formulario de
+                    mas abajo (el otro es el xml de las preguntas del cuestionario).</p>
+            </li>
+            <li id="slide7">
+                <img src="{{url_for('static', filename='tutorial/paso5.png')}}" />
+                <p>Una vez hecho esto, nos deberemos meter ir a dialogflow, para crear un nuevo agente, para ello
+                    pincharemos en el rectángulo rojo y crearemos un nuevo agente.</p>
+            </li>
+            <li id="slide5">
+                <img src="{{url_for('static', filename='tutorial/pasoIntermedio.png')}}" />
+                <p>Se nos abrirá la siguiente pantalla (la que se ve en la imagen). Aquí deberemos
+                    seleccionar el proyecto creado anteriormente y el idioma como se señala con los
+                    recuadros rojos. Para acabar le daremos a "Create".</p>
+            </li>
+            <li id="slide6">
+                <img src="{{url_for('static', filename='tutorial/paso5.5.png')}}" />
+                <p>En el menú lateral deberemos pinchar en fullfilment.</p>
+            </li>
+
+            <li id="slide8">
+                <img src="{{url_for('static', filename='tutorial/paso6.png')}}" />
+                <p>Se nos abrirá la siguiente pantalla activaremos esta función dándole al rectángulo de más arriba.
+                    Después deberemos rellenar el campo url, con la url de
+                    esta página + /webhook. Ejemplo: https://prueba/webhook.</p>
+            </li>
+
+
+        </ul>
+        <ul class="menu">
+            <li>
+                <a href="#slide1">1</a>
+            </li>
+            <li>
+                <a href="#slide2">2</a>
+            </li>
+            <li>
+                <a href="#slide3">3</a>
+            </li>
+            <li>
+                <a href="#slide4">4</a>
+            </li>
+            <li>
+                <a href="#slide5">5</a>
+            </li>
+            <li>
+                <a href="#slide6">6</a>
+            </li>
+            <li>
+                <a href="#slide7">7</a>
+            </li>
+            <li>
+                <a href="#slide8">8</a>
+            </li>
+        </ul>
+
+    </div>
     <div class="formArea">
         <form id="form" enctype="multipart/form-data" method="post" action="/prueba">
+            <label for="nameBot">Nombre del bot: </label>
+            <input name="bot" type="text" id="nameBot">
             <label for="nameProject">Nombre del proyecto: </label>
             <input name="projectFile" type="text" id="nameProject">
             <input name="file" type="file" multiple="multiple"/>

@@ -18,6 +18,7 @@ nota = [[0]]
 uploads_dir = os.path.join(app.instance_path, 'uploads')
 os.makedirs(uploads_dir, exist_ok=True)
 
+
 def calculoNota(respuestasUsuario):
     global nota
     respuestas = conseguirNotas("preguntasXML.xml")
@@ -42,7 +43,7 @@ def handler(agent: WebhookClient) -> None:
 
 
 @app.route('/webhook', methods=['POST'])
-def webhook() -> Dict:
+def webhook():
     """Handle webhook requests from Dialogflow."""
     global nota
     data = request.get_json(silent=True)
@@ -59,8 +60,9 @@ def webhook() -> Dict:
     agent = WebhookClient(data)
     agent.handle_request(handler)
     preguntasUsuario.append(data['queryResult']['queryText'])
-    # print(preguntasUsuario)
-    return agent.response
+    # print(agent.response)
+    # print(jsonify(agent.response))
+    return jsonify(agent.response)
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -76,31 +78,36 @@ def index():
 def prueba():
     if request.method == 'POST':
         print(request.files.getlist("file"))
+        fileQuestions = ""
         for file in request.files.getlist("file"):
             print(file.filename)
             filename, file_extension = os.path.splitext(file.filename)
+            file.save(os.path.join(uploads_dir, secure_filename(file.filename)))
             if file_extension == ".xml":
                 fileQuestions = file.filename
-            file.save(os.path.join(uploads_dir, secure_filename(file.filename)))
-        storage_client = explicit(os.path.join(uploads_dir, "secure.json"))
+            elif file_extension == ".json":
+                secureJSON = file.filename
+        explicit(os.path.join(uploads_dir, secure_filename(secureJSON)))
 
-        #f = request.files["file"]
-        #f.save(secure_filename(f.filename))
-        formIntent("api-brl9", "bot", readXMLFile(fileQuestions),storage_client)
+        # f = request.files["file"]
+        # f.save(secure_filename(f.filename))
+        formIntent(request.form["projectFile"], request.form["bot"], readXMLFile(fileQuestions))
     return "<p>Hola</p>"
+
 
 def explicit(file):
     # Explicitly use service account credentials by specifying the private key
     # file.
     storage_client = storage.Client.from_service_account_json(
         file)
-    #os.system("export GOOGLE_APPLICATION_CREDENTIALS=" + file)
+    # os.system("export GOOGLE_APPLICATION_CREDENTIALS=" + file)
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = file
     print(os.environ['GOOGLE_APPLICATION_CREDENTIALS'])
     # Make an authenticated API request
-    #buckets = list(storage_client.list_buckets())
-    #print(buckets)
+    # buckets = list(storage_client.list_buckets())
+    # print(buckets)
     return storage_client
+
 
 if __name__ == '__main__':
     app.run(debug=True)

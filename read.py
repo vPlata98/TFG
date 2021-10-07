@@ -22,9 +22,9 @@ def shortAnswer(nodoPregunta):
             respuestas.insert(0, respuestaRaw)
         else:
             respuestas.append(respuestaRaw)
-
+    img = [parser.imgInfo["src"] + parser.imgInfo["alt"]]
     respuestasAll.append(respuestas)
-    return list(zip(preguntas, respuestasAll, ["shortAnswer"], ([None], [None])))
+    return list(zip(preguntas, respuestasAll, ["shortAnswer"], img))
 
 
 def trueFalse(nodoPregunta):
@@ -111,30 +111,27 @@ def conseguirNotas(file):
     raiz = arbol.getroot()
     respuestas = {}
     for nodoPregunta in raiz.findall("question")[1:]:
+        # Para conseguir la nota de las preguntas en la que se debe seleccionar la palabra que falta
         for index, respuesta in enumerate(nodoPregunta.iter("selectoption")):
             preguntaRaw = nodoPregunta.find("questiontext")[0].text
+            parser = MyHTMLParser()
+            parser.feed(respuesta[0].text)
             correcta = int(preguntaRaw[preguntaRaw.find("[[") + 2]) - 1
-            if respuesta[0].text.find(">") != -1:
-                if index == correcta:
-                    respuestas[respuesta[0].text[respuesta[0].text.find(">") + 1:respuesta[0].text.rfind("<")]] = 100
-                else:
-                    respuestas[respuesta[0].text[respuesta[0].text.find(">") + 1:respuesta[0].text.rfind("<")]] = 0
+            if index == correcta:
+                respuestas[parser.data] = 100
             else:
-                if index == correcta:
-                    respuestas[respuesta[0].text] = 100
-                else:
-                    respuestas[respuesta[0].text] = 0
+                respuestas[parser.data] = 0
+        # Para los demas tipos de preguntas, cada respuesta tiene una nota asociada
         for respuesta in nodoPregunta.iter("answer"):
+            parser = MyHTMLParser()
+            parser.feed(respuesta[0].text)
             if nodoPregunta.get("type") == "truefalse":
                 if respuesta[0].text == "true":
                     respuestas["Verdadero"] = int(respuesta.get("fraction"))
                 else:
                     respuestas["Falso"] = int(respuesta.get("fraction"))
-            elif respuesta[0].text.find(">") != -1:
-                respuestas[respuesta[0].text[respuesta[0].text.find(">") + 1:respuesta[0].text.rfind("<")]] = \
-                    int(respuesta.get("fraction"))
             else:
-                respuestas[respuesta[0].text] = int(respuesta.get("fraction"))
+                respuestas[parser.data] = int(respuesta.get("fraction"))
     return respuestas
 
 
@@ -157,4 +154,4 @@ def readXMLFile(file):
 
 if __name__ == "__main__":
     raiz = readXMLFile(sys.argv[1])
-    # print(conseguirNotas(sys.argv[1]))
+    #print(conseguirNotas(sys.argv[1]))
