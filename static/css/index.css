@@ -41,6 +41,8 @@ input[type=submit]:hover {
 }
 h1{
     margin: auto;
+    text-align: center;
+    padding: 20px;
 }
 
 ul, li {
@@ -52,6 +54,7 @@ ul, li {
     width:800px;
     height:650px;
     padding: 20px;
+    margin: auto;
 }
 
 ul.slider{
@@ -108,6 +111,15 @@ ul.slider li:target{
     height: 20px;
     font-size: 20px;
     border-radius: 100%;
+}
+
+.progress progress{
+    visibility: hidden;
+}
+
+.progress{
+    text-align: center;
+    margin-bottom: 200px;
 }
 
 

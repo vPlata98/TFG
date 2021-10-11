@@ -67,18 +67,10 @@ def webhook():
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
-    if request.method == "POST":
-        print(request.form["file0"])
-        return "Conseguido!!"
-    else:
-        return render_template('index.html')
-
-
-@app.route('/prueba', methods=['POST', 'GET'])
-def prueba():
     if request.method == 'POST':
         print(request.files.getlist("file"))
         fileQuestions = ""
+        secureJSON = ""
         for file in request.files.getlist("file"):
             print(file.filename)
             filename, file_extension = os.path.splitext(file.filename)
@@ -92,7 +84,9 @@ def prueba():
         # f = request.files["file"]
         # f.save(secure_filename(f.filename))
         formIntent(request.form["projectFile"], request.form["bot"], readXMLFile(fileQuestions))
-    return "<p>Hola</p>"
+        return render_template("index.html", send=True)
+    else:
+        return render_template('index.html')
 
 
 def explicit(file):
