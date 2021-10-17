@@ -15,13 +15,15 @@ logger = create_logger(app)
 logger.setLevel(INFO)
 preguntasUsuario = []
 nota = [[0]]
+respuestas = conseguirNotas("preguntasXML.xml")
+currentQuestion = 0
+flag = False
 uploads_dir = os.path.join(app.instance_path, 'uploads')
 os.makedirs(uploads_dir, exist_ok=True)
 
 
 def calculoNota(respuestasUsuario):
-    global nota
-    respuestas = conseguirNotas("preguntasXML.xml")
+    global nota, respuestas
     for index, respuesta in enumerate(respuestasUsuario):
         respuestasCorrectas = [x for x in respuestas.keys() if x.lower() == respuesta.lower()]
         nota.append([respuestas[puntuacion] / 100 for puntuacion in respuestasCorrectas])
@@ -45,14 +47,20 @@ def handler(agent: WebhookClient) -> None:
 @app.route('/webhook', methods=['POST'])
 def webhook():
     """Handle webhook requests from Dialogflow."""
-    global nota
+    global nota, flag, currentQuestion, respuestas
     data = request.get_json(silent=True)
     # print(data)
-    if data['queryResult']['queryText'] == 'adios':
+
+    if data['queryResult']['queryText'].lower() in ["listo", "preparado", "vamos", "comencemos", "ya", "adelante", "empieza", "comienza"]:
+        flag = True
+    if flag:
+        currentQuestion += 1
+    if data['queryResult']['queryText'].lower() in ["adiós","adios", "hasta luego", "chao", "nos vemos"]:
         print(preguntasUsuario[2:])
         calculoNota(preguntasUsuario[2:])
+        numRespuestas = len([key for key, value in respuestas.items() if value == 100])
         reply = {
-            "fulfillmentText": "Tu nota es la siguiente " + str(nota) + "/" + str(len(preguntasUsuario[2:])),
+            "fulfillmentText": "Tu nota es la siguiente " + str(nota) + "/" + str(numRespuestas),
         }
         preguntasUsuario.clear()
         nota = [[0]]
@@ -61,7 +69,7 @@ def webhook():
     agent.handle_request(handler)
     preguntasUsuario.append(data['queryResult']['queryText'])
     # print(agent.response)
-    # print(jsonify(agent.response))
+    print(agent.response)
     return jsonify(agent.response)
 
 

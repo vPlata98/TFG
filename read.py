@@ -16,10 +16,10 @@ def shortAnswer(nodoPregunta):
 
     preguntas.append([pregunta])
 
-    for respuesta in nodoPregunta.iter("answer"):
+    for indx, respuesta in enumerate(nodoPregunta.iter("answer")):
         respuestaRaw = respuesta[0].text
         if respuesta.get("fraction") == "100":
-            respuestas.insert(0, respuestaRaw)
+            respuestas.append(respuestaRaw)
         else:
             respuestas.append(respuestaRaw)
     img = [parser.imgInfo["src"] + parser.imgInfo["alt"]]
@@ -40,12 +40,12 @@ def trueFalse(nodoPregunta):
     pregunta.append(parser.data)
     preguntas.append(pregunta)
 
-    for respuesta in nodoPregunta.iter("answer"):
+    for indx, respuesta in enumerate(nodoPregunta.iter("answer")):
         respuestaRaw = respuesta[0].text
         if respuesta.get("fraction") == "100" and respuestaRaw == "true":
-            respuestas.insert(0, "Verdadero")
+            respuestas.append(str(indx+1) + ") " + "Verdadero")
         else:
-            respuestas.append("Falso")
+            respuestas.append(str(indx+1) + ") " + "Falso")
 
     respuestasAll.append(respuestas)
     img = [parser.imgInfo["src"] + parser.imgInfo["alt"]]
@@ -64,13 +64,13 @@ def multiplechoice(nodoPregunta):
     pregunta.append(parser.data)
     preguntas.append(pregunta)
 
-    for respuesta in nodoPregunta.iter("answer"):
+    for indx, respuesta in enumerate(nodoPregunta.iter("answer")):
         respuestaAct = []
         respuestaRaw = respuesta[0].text
         if respuesta.get("fraction") == "100":
-            respuestas.insert(0, respuestaRaw[respuestaRaw.find(">") + 1:respuestaRaw.rfind("<")])
+            respuestas.append(str(indx+1) + ") " + respuestaRaw[respuestaRaw.find(">") + 1:respuestaRaw.rfind("<")])
         else:
-            respuestas.append(respuestaRaw[respuestaRaw.find(">") + 1:respuestaRaw.rfind("<")])
+            respuestas.append(str(indx+1) + ") " + respuestaRaw[respuestaRaw.find(">") + 1:respuestaRaw.rfind("<")])
 
     print("DIC")
     print(parser.imgInfo)
@@ -88,17 +88,17 @@ def gapSelect(nodoPregunta):
     preguntaRaw = nodoPregunta.find("questiontext")[0].text
     parser = MyHTMLParser()
     parser.feed(preguntaRaw)
-    pregunta.append(parser.data)
-    preguntas.append(pregunta)
     correcta = int(preguntaRaw[preguntaRaw.find("[[") + 2]) - 1
+    pregunta.append(parser.data[:parser.data.find("[[") + 2] + "_" + parser.data[parser.data.find("[[") + 3:])
+    preguntas.append(pregunta)
     preguntas.append(pregunta)
 
     for indx, respuesta in enumerate(nodoPregunta.iter("selectoption")):
         respuestaRaw = respuesta[0].text
         if indx == correcta:
-            respuestas.insert(0, respuestaRaw)
+            respuestas.append(str(indx+1) + ") " + respuestaRaw)
         else:
-            respuestas.append(respuestaRaw)
+            respuestas.append(str(indx+1) + ") " + respuestaRaw)
 
     respuestasAll.append(respuestas)
     # print(list(zip(preguntas, respuestasAll)))
@@ -118,20 +118,22 @@ def conseguirNotas(file):
             parser.feed(respuesta[0].text)
             correcta = int(preguntaRaw[preguntaRaw.find("[[") + 2]) - 1
             if index == correcta:
-                respuestas[parser.data] = 100
+                respuestas[str(index+1) + ") " + parser.data] = 100
             else:
                 respuestas[parser.data] = 0
         # Para los demas tipos de preguntas, cada respuesta tiene una nota asociada
-        for respuesta in nodoPregunta.iter("answer"):
+        for index, respuesta in enumerate(nodoPregunta.iter("answer")):
             parser = MyHTMLParser()
             parser.feed(respuesta[0].text)
             if nodoPregunta.get("type") == "truefalse":
                 if respuesta[0].text == "true":
-                    respuestas["Verdadero"] = int(respuesta.get("fraction"))
+                    respuestas[str(index+1) + ") " + "Verdadero"] = int(respuesta.get("fraction"))
                 else:
-                    respuestas["Falso"] = int(respuesta.get("fraction"))
-            else:
+                    respuestas[str(index+1) + ") " + "Falso"] = int(respuesta.get("fraction"))
+            elif nodoPregunta.get("type") == "shortanswer":
                 respuestas[parser.data] = int(respuesta.get("fraction"))
+            else:
+                respuestas[str(index+1) + ") " + parser.data] = int(respuesta.get("fraction"))
     return respuestas
 
 
@@ -154,4 +156,4 @@ def readXMLFile(file):
 
 if __name__ == "__main__":
     raiz = readXMLFile(sys.argv[1])
-    #print(conseguirNotas(sys.argv[1]))
+    print(conseguirNotas(sys.argv[1]))

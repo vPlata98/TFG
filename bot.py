@@ -10,9 +10,12 @@ from read import readXMLFile
 
 trainingSaludos = ["Hola", "Saludos", "Que tal", "hey"]
 trainingDespedida = ["Adios", "Hasta luego", "Chao", "Nos vemos"]
-textoAvisame = ["hola, cuando estes listo, avisame y comenzara el test de trivia"]
-textoListo = ["listo", "preparado", "vamos", "comencemos"]
-textoDespedida = ["El trivia ha terminado, gracias por jugar. Despidete para obtener tu nota."]
+textoAvisame = ["Hola, cuando estes listo, avisame y comenzara el test de trivia"]
+textoListo = ["listo", "preparado", "vamos", "comencemos", "ya", "adelante", "empieza", "comienza"]
+textoDespedida = ["El trivia ha terminado, gracias por jugar. Despidete para obtener tu nota. Por favor, evalúame "
+                  "haciendo esta encuesta: "
+                  "https://docs.google.com/forms/d/e/1FAIpQLSeBg3ydhTGIRkVAXu3SwZxu2zVlQ3DYKb3SFqLvvJxQMAxb7g"
+                  "/viewform?usp=sf_link"]
 
 
 def create_intent(project_id, display_name, training_phrases_parts,
@@ -39,11 +42,11 @@ def create_intent(project_id, display_name, training_phrases_parts,
         message_response_txt = dialogflow_v2_beta.Intent.Message.QuickReplies(title=message_texts[0][0],
                                                                               quick_replies=message_texts[1])
         message_response = dialogflow_v2_beta.Intent.Message(quick_replies=message_response_txt)
-    elif type == "multichoice":
+    elif type in ["multichoice", "trueFalse", "gapSelect"]:
         message_response_txt = dialogflow_v2_beta.Intent.Message.Card(title=message_texts[0][0],
                                                                       buttons=creadorBotones(message_texts[1]),
                                                                       image_uri=imgInfo[0],
-                                                                      subtitle=imgInfo[1])
+                                                                      subtitle='\n '.join(message_texts[1]))
         message_response = dialogflow_v2_beta.Intent.Message(card=message_response_txt)
 
     elif type == "normal":
@@ -52,15 +55,9 @@ def create_intent(project_id, display_name, training_phrases_parts,
     else:
         message_response_txt = dialogflow_v2_beta.Intent.Message.Text(text=['\n--> '.join(sum(message_texts, []))])
         message_response = dialogflow_v2_beta.Intent.Message(text=message_response_txt)
-    print("ANTES DE NADA ")
-    print(message_response_txt)
 
-    print("DESPUES ")
-    print(message_response)
     responses.append(message_response)
-    print("RESPONSES")
-    print(responses)
-    print("id", father)
+
     if hijo:
         followup = dialogflow_v2_beta.Intent.FollowupIntentInfo(followup_intent_name="custom")
         intent = dialogflow_v2_beta.Intent(
@@ -119,6 +116,13 @@ def _get_intent_ids(project_id, display_name):
     return intent_ids
 
 
+def rangeQuestions(message):
+    for indx, msg in enumerate(message[1:]):
+        message[indx] = str(indx) + ")" + msg
+    print(message)
+    return message
+
+
 def formIntent(projectCode, projectName, preguntas):
     intent1 = create_intent(projectCode, projectName, trainingSaludos, textoAvisame, "normal")
     message = [preguntas[0][0]] + [random.sample(preguntas[0][1], len(preguntas[0][1]))]
@@ -161,7 +165,7 @@ def formIntent(projectCode, projectName, preguntas):
 
 def creadorBotones(bot):
     botones = []
-    for b in bot:
+    for indx, b in enumerate(bot):
         botones.append({'text': b})
     return botones
 
